@@ -34,6 +34,12 @@
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
+  --color-success-foreground: var(--success-foreground);
+  --color-success: var(--success);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning: var(--warning);
+  --color-info-foreground: var(--info-foreground);
+  --color-info: var(--info);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
@@ -72,8 +78,10 @@
   --destructive: oklch(0.6 0.18 25); /* Subdued red */
   --destructive-foreground: oklch(0.98 0 0);
 
-  --success: oklch(0.5 0.12 145); /* Sophisticated green */
-  --success-foreground: oklch(0.98 0 0);
+  --success: oklch(
+    0.7 0.15 155
+  ); /* Emerald green - adjusted lightness and hue */
+  --success-foreground: oklch(0.2 0 0);
 
   --warning: oklch(0.65 0.12 75); /* Muted orange */
   --warning-foreground: oklch(0.15 0 0);
@@ -167,7 +175,7 @@
   --destructive: oklch(0.65 0.18 25);
   --destructive-foreground: oklch(0.13 0 0);
 
-  --success: oklch(0.6 0.12 145);
+  --success: oklch(0.75 0.15 155); /* Emerald green for dark mode */
   --success-foreground: oklch(0.13 0 0);
 
   --warning: oklch(0.7 0.12 75);
