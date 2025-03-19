@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
-import { type NextRequest, NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
-const updateSession = async (request: NextRequest) => {
+export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   });
@@ -29,9 +29,8 @@ const updateSession = async (request: NextRequest) => {
     }
   );
 
+  // refreshing the auth token
   await supabase.auth.getUser();
 
   return supabaseResponse;
-};
-
-export default updateSession;
+}

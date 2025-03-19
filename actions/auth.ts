@@ -1,77 +1,40 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import createClient from "@/lib/supabase/server";
-import { type EmailOtpType } from "@supabase/supabase-js";
-
 import * as z from "zod";
-import { signInSchema, signUpSchema } from "@/lib/zod/authSchema";
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { authSchema } from "@/lib/zod/authSchema";
 
-export const signInUser = async (values: z.infer<typeof signInSchema>) => {
-  const supabase = await createClient();
-
-  const validatedFields = signInSchema.safeParse(values);
-
-  if (!validatedFields.success) {
-    return { error: true, message: "Invalid fields" };
-  }
-
-  const { error } = await supabase.auth.signInWithPassword(
-    validatedFields.data
-  );
-
-  if (error) {
-    console.log(error);
-    redirect("/error");
-  }
-
-  revalidatePath("/", "layout");
-  redirect("/account");
+export const signInUser = async (values: z.infer<typeof authSchema>) => {
+  console.log(values);
 };
 
-export const signUpUser = async (values: z.infer<typeof signUpSchema>) => {
+export const signUpUser = async () => {
   const supabase = await createClient();
 
-  const validatedFields = signUpSchema.safeParse(values);
-
-  if (!validatedFields.success) {
-    return { error: true, message: "Invalid fields" };
-  }
-
-  const { error } = await supabase.auth.signUp(validatedFields.data);
-
-  if (error) {
-    redirect("/error");
-  }
-
-  revalidatePath("/", "layout");
-
-  return {
-    success: true,
-    message: "Check your email for verification link",
-  };
-};
-
-export async function verifyEmail(
-  token_hash: string | null,
-  type: EmailOtpType | null
-) {
-  if (!token_hash || !type) {
-    redirect("/error");
-  }
-
-  const supabase = await createClient();
-
-  const { error } = await supabase.auth.verifyOtp({
-    type,
-    token_hash,
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: "http://localhost:3000/auth/callback",
+    },
   });
 
-  if (error) {
-    console.log(error);
-    redirect("/error");
+  if (data.url) {
+    redirect(data.url);
   }
 
-  redirect("/account");
-}
+  if (error) {
+    console.error(error);
+    return {
+      error: true,
+      message: error.message,
+    };
+  }
+};
+
+export const signOutUser = async () => {
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  redirect("/");
+};

@@ -8,7 +8,7 @@ const FormError = ({
   text: string;
   className?: string;
 }) => {
-  if (!text) null;
+  if (!text) return null;
   return (
     <div
       className={cn(

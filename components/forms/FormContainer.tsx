@@ -14,14 +14,16 @@ const FormContainer = ({
   footer,
 }: {
   children: React.ReactNode;
-  title: string;
-  description: string;
+  title: React.ReactNode;
+  description?: string;
   footer?: React.ReactNode;
 }) => {
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold">{title}</CardTitle>
+        <CardTitle className="flex flex-col gap-2 items-center justify-center">
+          {title}
+        </CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>{children}</CardContent>

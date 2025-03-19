@@ -1,10 +1,10 @@
 import Container from "@/components/Container";
-import SignInForm from "@/components/forms/SignInForm";
+import SignUpForm from "@/components/forms/SignUpForm";
 
 const SignInPage = () => {
   return (
-    <Container className=" h-[calc(100vh-70px)] flex items-center justify-center">
-      <SignInForm />
+    <Container className="flex h-[calc(100vh-70px)] items-center justify-center">
+      <SignUpForm />
     </Container>
   );
 };

@@ -17,54 +17,57 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import FormContainer from "@/components/forms/FormContainer";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useState } from "react";
 
-import { signUpSchema } from "@/lib/zod/authSchema";
 import { signUpUser } from "@/actions/auth";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import FormError from "@/components/forms/FormError";
 import FormSuccess from "@/components/forms/FormSuccess";
+import { authSchema } from "@/lib/zod/authSchema";
+import { Utensils } from "lucide-react";
+import { EB_Garamond } from "next/font/google";
+import Image from "next/image";
+
+const garamond = EB_Garamond({
+  variable: "--font-garamond",
+  subsets: ["latin"],
+});
 
 const SignUpForm = () => {
-  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
 
-  const form = useForm<z.infer<typeof signUpSchema>>({
-    resolver: zodResolver(signUpSchema),
+  const form = useForm<z.infer<typeof authSchema>>({
+    resolver: zodResolver(authSchema),
     defaultValues: {
       email: "",
-      password: "",
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof signUpSchema>) => {
-    const res = await signUpUser(values);
-    if (res.success) {
-      setSuccess(res.message);
-    } else {
-      setError(res.message);
-    }
+  const authWithGoogle = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(undefined);
+    setSuccess(undefined);
+
+    await signUpUser();
+  };
+
+  const magicLinkAuth = async (values: z.infer<typeof authSchema>) => {
     console.log(values);
   };
 
   return (
-    <Form {...form}>
-      <FormContainer
-        title="Sign up"
-        description="Create an account to continue"
-        footer={
-          <p className="text-sm text-muted-foreground">
-            Already have an account?
-            <Button variant="link" asChild size="sm" className="-ml-1.5">
-              <Link href="/auth/sign-in">Sign in</Link>
-            </Button>
-          </p>
-        }
-      >
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+    <FormContainer
+      title={
+        <>
+          <Utensils className="size-12" />
+          <h2 className={`text-3xl font-semibold ${garamond.className}`}>
+            Welcome to NutriPlan <span className="text-primary">AI</span>
+          </h2>
+        </>
+      }
+    >
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(magicLinkAuth)}>
           <FormField
             control={form.control}
             name="email"
@@ -78,49 +81,59 @@ const SignUpForm = () => {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Input
-                      placeholder="Enter your password"
-                      {...field}
-                      type={showPassword ? "text" : "password"}
-                    />
-                    <div className="absolute right-3 top-3">
-                      {showPassword ? (
-                        <EyeIcon
-                          size={16}
-                          className="cursor-pointer"
-                          onClick={() => setShowPassword(!showPassword)}
-                        />
-                      ) : (
-                        <EyeOffIcon
-                          size={16}
-                          className="cursor-pointer"
-                          onClick={() => setShowPassword(!showPassword)}
-                        />
-                      )}
-                    </div>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {error && <FormError text={error} className="-mb-1" />}
-          {success && <FormSuccess text={success} className="-mb-1" />}
 
-          <SubmitButton isLoading={form.formState.isSubmitting}>
-            Sign up
+          {error && <FormError text={error} />}
+          {success && <FormSuccess text={success} />}
+
+          <SubmitButton
+            isLoading={form.formState.isSubmitting}
+            className="mb-1"
+          >
+            Sign in with email
           </SubmitButton>
         </form>
-      </FormContainer>
-    </Form>
+      </Form>
+
+      <div className="relative my-2">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-gray-300" />
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="bg-background px-4 text-muted-foreground text-lg -mt-1">
+            or
+          </span>
+        </div>
+      </div>
+
+      <form onSubmit={authWithGoogle} className="flex flex-col gap-2">
+        <SubmitButton
+          className="flex items-center gap-2 rounded-full mt-0"
+          variant="outline"
+        >
+          <Image
+            src="/google-icon.svg"
+            alt="Google Icon"
+            width={23}
+            height={23}
+            className="rounded-full"
+          />
+          Sign in with Google
+        </SubmitButton>
+        <SubmitButton
+          className="flex items-center gap-2 rounded-full mt-0"
+          variant="outline"
+        >
+          <Image
+            src="/google-icon.svg"
+            alt="Google Icon"
+            width={23}
+            height={23}
+            className="rounded-full"
+          />
+          Other OAuth
+        </SubmitButton>
+      </form>
+    </FormContainer>
   );
 };
 

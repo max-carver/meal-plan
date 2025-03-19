@@ -38,7 +38,6 @@ const SignInForm = () => {
 
   const onSubmit = async (values: z.infer<typeof signInSchema>) => {
     await signInUser(values);
-    console.log(values);
   };
 
   return (
@@ -48,7 +47,7 @@ const SignInForm = () => {
         description="Welcome Back"
         footer={
           <p className="text-sm text-muted-foreground">
-            Don't have an account?
+            Don&apos;t have an account?
             <Button variant="link" asChild size="sm" className="-ml-1.5">
               <Link href="/auth/sign-up">Sign up</Link>
             </Button>

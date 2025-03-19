@@ -1,32 +1,39 @@
-"use client";
-
 import Link from "next/link";
 import Container from "@/components/Container";
 import { Button } from "@/components/ui/button";
-import { EB_Garamond } from "next/font/google";
-import { Utensils } from "lucide-react";
+import { signOutUser } from "@/actions/auth";
+import { createClient } from "@/lib/supabase/server";
+import Logo from "@/components/Logo";
 
-const garamond = EB_Garamond({
-  variable: "--font-garamond",
-  subsets: ["latin"],
-});
+const Navbar = async () => {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-const Navbar = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b backdrop-blur">
       <Container className="flex h-16 items-center justify-between">
-        <Link
-          href="/"
-          className={`${garamond.className} text-3xl font-bold flex items-center gap-2`}
-        >
-          <Utensils className="size-7 " />
-          NutriPlan
-          <span className="text-primary">AI</span>
-        </Link>
+        <Logo />
         <nav className="flex items-center gap-4">
-          <Button asChild size="lg">
-            <Link href="/meal-planner">Create Your Plan</Link>
-          </Button>
+          {user ? (
+            <Button size="sm" onClick={signOutUser}>
+              Sign Out
+            </Button>
+          ) : (
+            <>
+              <Button size="sm" asChild variant="ghost">
+                <Link href="/auth">Sign In</Link>
+              </Button>
+
+              <Button
+                asChild
+                className="rounded-full  shadow-primary/50 hover:shadow-md transition-all duration-300"
+              >
+                <Link href="/meal-planner">Get Started</Link>
+              </Button>
+            </>
+          )}
         </nav>
       </Container>
     </header>
